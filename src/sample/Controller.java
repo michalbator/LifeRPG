@@ -14,7 +14,6 @@ public class Controller {
     private Interface view;
     Controller(){
         DBc = new DBConnector();
-        this.view = view;
     }
     public void setView(Interface view){
         this.view = view;
@@ -27,7 +26,6 @@ public class Controller {
         for(Task task : listOfTasks){
             result += task.getName() + " | " + task.getPoints() + "\r\n";
         }
-        //result.substring(0, result.length()-1);
         return result;
     }
     public String addValues(String name, String points){
