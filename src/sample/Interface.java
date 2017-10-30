@@ -1,10 +1,13 @@
 package sample;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -18,6 +21,7 @@ public class Interface {
     private TextField pointsTF;
     private TextArea resultTF;
     private ListView listOfTasks;
+    private TableView table;
     Interface(Stage primaryStage, Controller controller){
         this.controller = controller;
         this.primaryStage = primaryStage;
@@ -62,6 +66,16 @@ public class Interface {
         });
         listOfTasks = new ListView<String>();
         listOfTasks.setItems(FXCollections.observableArrayList(controller.allTasks()));
+
+        table = new TableView();
+        TableColumn<String, String> taskColumn = new TableColumn<>("Task");
+        TableColumn<String, String> resultColumn = new TableColumn<>("Result");
+        table.getColumns().addAll(taskColumn, resultColumn);
+        ObservableList<PropertyTask> listOfPropertyTask = controller.allPropertyTask();
+        taskColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        resultColumn.setCellValueFactory(new PropertyValueFactory<>("points"));
+        table.setItems(listOfPropertyTask);
+
         VBox vBox = new VBox();
         HBox hbox1 = new HBox();
         HBox hbox2 = new HBox();
@@ -69,7 +83,7 @@ public class Interface {
         hbox1.getChildren().addAll(new Label("name"), nameTF);
         hbox2.getChildren().addAll(new Label("points"), pointsTF);
         hbox3.getChildren().addAll(addButton, selectButton, clearButton);
-        vBox.getChildren().addAll(hbox1, hbox2, hbox3, resultTF, listOfTasks);
+        vBox.getChildren().addAll(hbox1, hbox2, hbox3, resultTF, listOfTasks, table);
         Scene scene = new Scene(vBox, 400, 500);
         this.primaryStage.setScene(scene);
         this.primaryStage.show();

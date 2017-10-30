@@ -1,13 +1,11 @@
 package sample;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Observable;
 
 public class Controller {
     private DBConnector DBc;
@@ -61,6 +59,21 @@ public class Controller {
             resultList.add(task.getName() + " | " + task.getPoints());
         }
         return resultList;
+    }
+    public ObservableList<PropertyTask> allPropertyTask(){
+        ArrayList<Task> listOfTask;
+        ObservableList<PropertyTask> listOfPropertyTask = FXCollections.observableArrayList();
+        try {
+            listOfTask = DBc.getAllTask();
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+            return null;
+        }
+        for(Task task : listOfTask){
+            listOfPropertyTask.add(new PropertyTask(task));
+        }
+        return listOfPropertyTask;
     }
 
 }
