@@ -62,7 +62,7 @@ public class Interface {
         TableColumn<PropertyTask, String> taskColumn = new TableColumn<>("Task");
         TableColumn<PropertyTask, String> resultColumn = new TableColumn<>("Result");
         TableColumn<PropertyTask, String> idColumn = new TableColumn<>("ID");
-        table.getColumns().addAll(taskColumn, resultColumn, idColumn);
+        table.getColumns().addAll(taskColumn, resultColumn, idColumn);;
         ObservableList<PropertyTask> listOfPropertyTask = controller.allPropertyTask();
         taskColumn.setCellValueFactory(data -> data.getValue().getName());
         resultColumn.setCellValueFactory(data -> data.getValue().getPoints());
