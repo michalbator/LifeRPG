@@ -19,22 +19,26 @@ public class DBConnector {
         }
     }
     public ArrayList<Task> getTaskByPoints(int points) throws SQLException{
-        String sql = "SELECT name, points FROM tasks WHERE points = " + Integer.toString(points) + ";";
+        String sql = "SELECT * FROM tasks WHERE points = " + Integer.toString(points) + ";";
         return getListOfTasks(sql);
     }
+    public Task getTaskByID(int id) throws SQLException{
+        String sql = "SELECT * FROM tasks WHERE id = " + Integer.toString(id) + ";";
+        ArrayList<Task> taskAsList = getListOfTasks(sql);
+        return taskAsList.get(0);
+    }
     private ArrayList<Task> getListOfTasks(String sql){
-        ResultSet resultSet = null;
-        Statement statement = null;
+        ResultSet resultSet;
+        Statement statement;
         ArrayList<Task> result = new ArrayList<>();
-        String nm = null;
-        int pt;
         try {
             statement = this.connection.createStatement();
             resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
-                nm = resultSet.getString("name");
-                pt = resultSet.getInt("points");
-                result.add(new Task(nm, pt));
+                int id = resultSet.getInt("id");
+                String nm = resultSet.getString("name");
+                int pt = resultSet.getInt("points");
+                result.add(new Task(nm, pt, id));
             }
         }
         catch(SQLException e){
@@ -43,12 +47,12 @@ public class DBConnector {
         return result;
     }
     ArrayList<Task>  getTaskByName(String name) throws SQLException{
-        String sql = "SELECT name, points FROM tasks WHERE name = '" + name + "';";
+        String sql = "SELECT * FROM tasks WHERE name = '" + name + "';";
         return getListOfTasks(sql);
     }
     public void addTask(String name, String points){
         String sql = "INSERT INTO tasks (name, points) VALUES ('" + name + "', " + points + ");";
-        Statement statement = null;
+        Statement statement;
         try {
             statement = this.connection.createStatement();
             statement.executeUpdate(sql);

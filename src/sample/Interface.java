@@ -1,18 +1,11 @@
 package sample;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.util.Arrays;
 
 public class Interface {
     private Stage primaryStage;
@@ -20,8 +13,8 @@ public class Interface {
     private TextField nameTF;
     private TextField pointsTF;
     private TextArea resultTF;
-    private ListView listOfTasks;
-    private TableView table;
+    private TableView<PropertyTask> table;
+
     Interface(Stage primaryStage, Controller controller){
         this.controller = controller;
         this.primaryStage = primaryStage;
@@ -32,50 +25,43 @@ public class Interface {
     public void start(){
         resultTF.setText("No result");
         Button addButton = new Button("Add");
-        addButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                String name = nameTF.getText();
-                String points = pointsTF.getText();
-                controller.addTask(name, points);
-                resultTF.setText("'" + name + "' added");
-                nameTF.clear();
-                pointsTF.clear();
-            }
+        addButton.setOnAction(event -> {
+            String name = nameTF.getText();
+            String points = pointsTF.getText();
+            controller.addTask(name, points);
+            resultTF.setText("'" + name + "' added");
+            nameTF.clear();
+            pointsTF.clear();
+            table.refresh();
         });
         Button selectButton = new Button("Show");
-        selectButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                String name = nameTF.getText();
-                String points = pointsTF.getText();
-                String result = controller.addValues(name, points);
-                resultTF.setText(result);
-                nameTF.clear();
-                pointsTF.clear();
-            }
+        selectButton.setOnAction(event -> {
+            String name = nameTF.getText();
+            String points = pointsTF.getText();
+            String result = controller.addValues(name, points);
+            resultTF.setText(result);
+            nameTF.clear();
+            pointsTF.clear();
         });
         Button clearButton = new Button("Clear");
-        clearButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                nameTF.clear();
-                pointsTF.clear();
-                resultTF.clear();
-            }
+        clearButton.setOnAction(event -> {
+            nameTF.clear();
+            pointsTF.clear();
+            resultTF.clear();
         });
-        listOfTasks = new ListView<String>();
-        listOfTasks.setItems(FXCollections.observableArrayList(controller.allTasks()));
+        TextField editBox = new TextField();
 
-        table = new TableView();
-        TableColumn<String, String> taskColumn = new TableColumn<>("Task");
-        TableColumn<String, String> resultColumn = new TableColumn<>("Result");
-        table.getColumns().addAll(taskColumn, resultColumn);
+        table = new TableView<>();
+        TableColumn<PropertyTask, String> taskColumn = new TableColumn<>("Task");
+        TableColumn<PropertyTask, String> resultColumn = new TableColumn<>("Result");
+        TableColumn<PropertyTask, String> idColumn = new TableColumn<>("ID");
+        table.getColumns().addAll(taskColumn, resultColumn, idColumn);
         ObservableList<PropertyTask> listOfPropertyTask = controller.allPropertyTask();
-        taskColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        resultColumn.setCellValueFactory(new PropertyValueFactory<>("points"));
+        taskColumn.setCellValueFactory(data -> data.getValue().getName());
+        resultColumn.setCellValueFactory(data -> data.getValue().getPoints());
+        idColumn.setCellValueFactory(data -> data.getValue().getId());
         table.setItems(listOfPropertyTask);
-
+        table.setOnMouseClicked(event -> editBox.setText(table.getSelectionModel().getSelectedItem().getName().get()));
         VBox vBox = new VBox();
         HBox hbox1 = new HBox();
         HBox hbox2 = new HBox();
@@ -83,7 +69,7 @@ public class Interface {
         hbox1.getChildren().addAll(new Label("name"), nameTF);
         hbox2.getChildren().addAll(new Label("points"), pointsTF);
         hbox3.getChildren().addAll(addButton, selectButton, clearButton);
-        vBox.getChildren().addAll(hbox1, hbox2, hbox3, resultTF, listOfTasks, table);
+        vBox.getChildren().addAll(hbox1, hbox2, hbox3, resultTF, table, editBox);
         Scene scene = new Scene(vBox, 400, 500);
         this.primaryStage.setScene(scene);
         this.primaryStage.show();
